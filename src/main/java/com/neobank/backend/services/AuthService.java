@@ -42,7 +42,7 @@ public class AuthService {
         User user = new User(
             0L,
             req.getUsername(),
-            req.getPassword(),
+            bcrypt.encode(req.getPassword()),
             "ROLE_USER"
         );
         userRepo.createUser(user);
