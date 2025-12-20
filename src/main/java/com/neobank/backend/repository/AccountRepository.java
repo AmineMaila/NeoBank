@@ -26,14 +26,14 @@ public class AccountRepository {
     }
 
     public Optional<Account> findById(Long id) {
-        final String sql = "SELECT * FROM accounts WHERE account_id = ?";
+        final String sql = "SELECT * FROM accounts WHERE id = ?";
 
         return jdbcTemplate.queryForStream(sql, accountRowMapper, id)
             .findFirst();
     }
 
     public void updateBalance(Long accountId, BigDecimal newBalance) {
-        final String sql = "UPDATE accounts SET balance = ? WHERE account_id = ?";
+        final String sql = "UPDATE accounts SET balance = ? WHERE id = ?";
 
         jdbcTemplate.update(sql, newBalance, accountId);
     }

@@ -1,15 +1,15 @@
 package com.neobank.backend.models;
 
 public class User {
-    private Long user_id;
+    private Long id;
     private String username;
     private String hashed_password;
     private String role;
 
     public User() {}
 
-    public User(Long user_id, String username, String hashed_password, String role) {
-        this.user_id = user_id;
+    public User(Long id, String username, String hashed_password, String role) {
+        this.id = id;
         this.username = username;
         this.hashed_password = hashed_password;
         this.role = role;
@@ -21,8 +21,8 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    public Long getUser_id() { return user_id; }
-    public void setUser_id(Long user_id) { this.user_id = user_id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

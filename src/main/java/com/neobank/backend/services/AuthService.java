@@ -51,6 +51,6 @@ public class AuthService {
         if (!bcrypt.matches(credentials.getPassword(), user.getHashed_password()))
             throw new BadCredentialsException("Wrong password");
 
-        return jwtUtil.generateToken(user.getUser_id());
+        return jwtUtil.generateToken(user.getId());
     }
 }

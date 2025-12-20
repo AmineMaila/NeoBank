@@ -9,7 +9,7 @@ CREATE TABLE accounts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
     balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT check_balance_positive CHECK (balance >= 0)
 );
 
