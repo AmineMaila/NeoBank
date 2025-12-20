@@ -1,11 +1,11 @@
 package com.neobank.backend.services;
 
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import com.neobank.backend.dto.LoginCredentials;
 import com.neobank.backend.dto.RegisterRequest;
@@ -19,25 +19,21 @@ public class AuthService {
     private final UserRepository userRepo;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder bcrypt;
-    private final UserDetailsService userDetailsService;
 
     public AuthService(
         UserRepository userRepo,
         JwtUtil jwtUtil,
-        PasswordEncoder bcrypt,
-        UserDetailsService userDetailsService    
+        PasswordEncoder bcrypt
     ) {
         this.userRepo = userRepo;
         this.jwtUtil = jwtUtil;
         this.bcrypt = bcrypt;
-        this.userDetailsService = userDetailsService;
     }
 
     @Transactional
     public void register(RegisterRequest req) {
-        Integer count = userRepo.usersCount(req.getUsername());
-        if (count != null && count > 0)
-            throw new UsernameTakenException(req.getUsername());
+        userRepo.findByUsername(req.getUsername())
+            .orElseThrow(() -> new UsernameTakenException(req.getUsername()));
 
         User user = new User(
             0L,
@@ -49,11 +45,12 @@ public class AuthService {
     }
 
     public String login(LoginCredentials credentials) {
-        UserDetails user = userDetailsService.loadUserByUsername(credentials.getUsername());
+        User user = userRepo.findByUsername(credentials.getUsername())
+            .orElseThrow(() -> new UsernameNotFoundException("authentication failed or is no longer valid"));
 
-        if (!bcrypt.matches(credentials.getPassword(), user.getPassword()))
+        if (!bcrypt.matches(credentials.getPassword(), user.getHashed_password()))
             throw new BadCredentialsException("Wrong password");
-        
-        return jwtUtil.generateToken(credentials.getUsername());
+
+        return jwtUtil.generateToken(user.getUser_id());
     }
 }

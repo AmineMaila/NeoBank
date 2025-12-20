@@ -15,10 +15,10 @@ public class JwtUtil {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long EXPIRATION_TIME = 1000 * 60 * 60;
 
-    public String generateToken(String username) {
+    public String generateToken(Long id) {
         Date setDate = new Date();
         return Jwts.builder()
-            .setSubject(username)
+            .setSubject(String.valueOf(id))
             .setIssuedAt(setDate)
             .setExpiration(new Date(setDate.getTime() + EXPIRATION_TIME))
             .signWith(key)
@@ -33,7 +33,7 @@ public class JwtUtil {
             .getBody();
     }
 
-    public String extractUsername(String token) {
+    public String extractSubject(String token) {
         return extractAllClaims(token).getSubject();
     }
 }

@@ -1,12 +1,12 @@
 CREATE TABLE users (
-    user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     hashed_password VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'ROLE_USER'
 );
 
 CREATE TABLE accounts (
-    account_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
     balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id),
@@ -14,7 +14,7 @@ CREATE TABLE accounts (
 );
 
 CREATE TABLE transfer_history (
-    transfer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     from_account_id BIGINT NOT NULL,
     to_account_id BIGINT NOT NULL,
     amount DECIMAL(15, 2) NOT NULL,

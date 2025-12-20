@@ -15,7 +15,7 @@ public class AccountRepository {
     
     private final RowMapper<Account> accountRowMapper = (rs, rowNum) -> {
         Account account = new Account();
-        account.setAccountId(rs.getLong("account_id"));
+        account.setAccountId(rs.getLong("id"));
         account.setUserId(rs.getLong("user_id"));
         account.setBalance(rs.getBigDecimal("balance"));
         return account;

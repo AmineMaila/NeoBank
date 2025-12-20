@@ -1,9 +1,9 @@
 package com.neobank.backend.security;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.neobank.backend.exception.UsernameNotFoundException;
 import com.neobank.backend.models.User;
 import com.neobank.backend.repository.UserRepository;
 
@@ -17,9 +17,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
     @Override
-    public SecurityUser loadUserByUsername(String username) {
-        User user = userRepo.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException(username)); 
+    public SecurityUser loadUserByUsername(String id) {
+        User user = userRepo.findById(Long.valueOf(id))
+            .orElseThrow(() -> new UsernameNotFoundException("authentication failed or is no longer valid"));
 
         return new SecurityUser(user);
     }

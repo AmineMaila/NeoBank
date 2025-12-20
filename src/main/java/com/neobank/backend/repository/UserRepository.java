@@ -13,7 +13,7 @@ public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<User> userMapper = (rs, rowNum) -> {
         User result = new User(
-            rs.getLong("user_id"),
+            rs.getLong("id"),
             rs.getString("username"),
             rs.getString("hashed_password"),
             rs.getString("role")
@@ -24,12 +24,6 @@ public class UserRepository {
 
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public Integer usersCount(String username) {
-        final String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
-
-        return jdbcTemplate.queryForObject(sql, Integer.class, username);
     }
 
     public void createUser(User user) {
@@ -47,5 +41,11 @@ public class UserRepository {
         final String sql = "SELECT * FROM users WHERE username = ?";
 
         return jdbcTemplate.queryForStream(sql, userMapper, username).findFirst();
+    }
+
+    public Optional<User> findById(Long id) {
+        final String sql = "SELECT * FROM users WHERE id = ?";
+
+        return jdbcTemplate.queryForStream(sql, userMapper, id).findFirst();
     }
 }

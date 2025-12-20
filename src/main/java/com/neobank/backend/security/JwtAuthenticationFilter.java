@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         final String auth = request.getHeader("Authorization");
         final String jwt;
-        String username;
+        String subject;
         if (auth == null || !auth.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -37,32 +37,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         jwt = auth.substring(7);
         try {
-            username = jwtUtil.extractUsername(jwt);
+            subject = jwtUtil.extractSubject(jwt);
         } catch (JwtException e) {
-            username = null;
+            subject = null;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(subject);
 
-            if (username.equals(userDetails.getUsername())) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-                );
-                /*
-                    this line sets details extracted from HttpServletRequest
-                    to the authentication object such as :
-                        - IP address of the user
-                        - Session ID if it exists
-                        ...
-                    if you later look at your logs or need to block a specific IP
-                */
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+            );
+            /*
+                this line sets details extracted from HttpServletRequest
+                to the authentication object such as :
+                    - IP address of the user
+                    - Session ID if it exists
+                    ...
+                if you later look at your logs or need to block a specific IP
+            */
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
         filterChain.doFilter(request, response);
     }
