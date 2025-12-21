@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         final String auth = request.getHeader("Authorization");
         final String jwt;
-        String subject;
+        final String subject;
         if (auth == null || !auth.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -38,13 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = auth.substring(7);
         try {
             subject = jwtUtil.extractSubject(jwt);
-        } catch (JwtException e) {
-            subject = null;
-        }
-
-        if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(subject);
-
+    
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
@@ -59,8 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if you later look at your logs or need to block a specific IP
             */
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
+    
             SecurityContextHolder.getContext().setAuthentication(authToken);
+        } catch (JwtException | UsernameNotFoundException e) {
+            SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(request, response);
     }

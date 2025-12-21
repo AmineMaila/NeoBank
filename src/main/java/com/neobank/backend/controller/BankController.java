@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 public class BankController {
     private final TransferService svc;
 
-
     public BankController(TransferService svc) {
         this.svc = svc;
     }

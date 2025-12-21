@@ -3,6 +3,7 @@ package com.neobank.backend.repository;
 import com.neobank.backend.models.Account;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +31,12 @@ public class AccountRepository {
 
         return jdbcTemplate.queryForStream(sql, accountRowMapper, id)
             .findFirst();
+    }
+
+    public List<Account> findByUserId(Long id) {
+        final String sql = "SELECT * FROM accounts WHERE user_id = ?";
+
+        return jdbcTemplate.query(sql, accountRowMapper, id);
     }
 
     public void updateBalance(Long accountId, BigDecimal newBalance) {

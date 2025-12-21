@@ -33,7 +33,7 @@ public class AuthService {
     @Transactional
     public void register(RegisterRequest req) {
         userRepo.findByUsername(req.getUsername())
-            .orElseThrow(() -> new UsernameTakenException(req.getUsername()));
+            .ifPresent(value -> new UsernameTakenException(req.getUsername()));
 
         User user = new User(
             0L,

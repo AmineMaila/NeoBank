@@ -2,6 +2,7 @@ package com.neobank.backend.services;
 
 import java.math.BigDecimal;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ public class TransferService {
         this.accountRepo = accountRepo;
     }
 
+    @PreAuthorize("@accountSecurity.isAuthorized(#p0)")
     @Transactional
     public void transferMoney(Long fromAccountId, Long toAccountId, BigDecimal ammount) {
         Account fromAccount = accountRepo.findById(fromAccountId).orElseThrow(
