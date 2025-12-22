@@ -66,7 +66,17 @@ public class GlobalExceptionHandler {
 			.body(Map.of(
 				"status", 401,
 				"error", "Unauthorized",
-				"details", ex.getMessage()
+				"message", ex.getMessage()
+			));
+	}
+
+	@ExceptionHandler(AccountCreationException.class)
+	public ResponseEntity<Map<String, Object>> accountCreationFailed(AccountCreationException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(Map.of(
+				"status", 500,
+				"error", "Internal Server Error",
+				"message", ex.getMessage()
 			));
 	}
 

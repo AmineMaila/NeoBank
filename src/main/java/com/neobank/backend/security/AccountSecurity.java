@@ -6,7 +6,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.neobank.backend.models.Account;
 import com.neobank.backend.repository.AccountRepository;
 
 @Component
@@ -23,11 +22,8 @@ public class AccountSecurity {
             .getAuthentication()
             .getPrincipal()).getId());
         
-        List<Account> clientAccounts = this.accountRepo.findByUserId(clientId); 
-
-        for (var acc : clientAccounts)
-            if (acc.getAccountId() == accountId)
-                return true;
-        throw new AccessDeniedException("You do not own account " + accountId);
+        this.accountRepo.findByUserId(accountId, clientId)
+            .orElseThrow(() -> new AccessDeniedException("You do not own account " + accountId));
+        return true;
     }
 }
